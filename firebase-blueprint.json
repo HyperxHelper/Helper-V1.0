@@ -1,0 +1,201 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User account registration details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Video": {
+      "title": "Video",
+      "description": "A YouTube video added to the platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "channelTitle": { "type": "string" },
+        "duration": { "type": "number" },
+        "category": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "duration"]
+    },
+    "Playlist": {
+      "title": "Playlist",
+      "description": "A collection of videos organized into a playlist",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "videoIds": { "type": "array" },
+        "createdBy": { "type": "string" },
+        "isPublic": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "createdBy", "videoIds"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "A student or teacher note pinned to a timestamp",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "videoId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "videoId", "userId", "timestamp", "text"]
+    },
+    "Resource": {
+      "title": "Resource",
+      "description": "An attached learning resource pinned to a timestamp",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "videoId": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["pdf", "link", "image", "excel"] },
+        "url": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "addedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "videoId", "title", "type", "url", "timestamp"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A discussion comment on a video",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "videoId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "videoId", "userId", "userDisplayName", "text"]
+    },
+    "Activity": {
+      "title": "Activity",
+      "description": "A student real-time activity log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "videoId": { "type": "string" },
+        "action": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "videoId", "action"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global application configuration settings",
+      "type": "object",
+      "properties": {
+        "aiTranscriptEnabled": { "type": "boolean" },
+        "publicCommentsEnabled": { "type": "boolean" },
+        "maintenanceMode": { "type": "boolean" },
+        "categories": { "type": "array" }
+      },
+      "required": ["aiTranscriptEnabled", "publicCommentsEnabled", "maintenanceMode"]
+    },
+    "CommunityPost": {
+      "title": "CommunityPost",
+      "description": "A collaborative study post or question on a video topic",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "videoId": { "type": "string" },
+        "videoTitle": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "topic": { "type": "string" },
+        "subject": { "type": "string" },
+        "content": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "votes": { "type": "number" },
+        "votedUsers": { "type": "array" },
+        "responses": { "type": "array" }
+      },
+      "required": ["id", "topic", "subject", "content", "userId"]
+    },
+    "Diary": {
+      "title": "Diary",
+      "description": "A student study diary or video notebook containing rich notes, timestamps, and resources",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "videoId": { "type": "string" },
+        "videoTitle": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "isPublicWiki": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "content", "videoId", "userId"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/videos/{videoId}": {
+      "schema": { "$ref": "#/entities/Video" },
+      "description": "Videos catalog"
+    },
+    "/playlists/{playlistId}": {
+      "schema": { "$ref": "#/entities/Playlist" },
+      "description": "Playlists wiki catalog"
+    },
+    "/notes/{noteId}": {
+      "schema": { "$ref": "#/entities/Note" },
+      "description": "Timed notebook entries"
+    },
+    "/resources/{resourceId}": {
+      "schema": { "$ref": "#/entities/Resource" },
+      "description": "Video pinned resources"
+    },
+    "/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Classroom discussions comments"
+    },
+    "/activities/{activityId}": {
+      "schema": { "$ref": "#/entities/Activity" },
+      "description": "Real-time user engagement activities"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "Global application configuration settings"
+    },
+    "/community_posts/{postId}": {
+      "schema": { "$ref": "#/entities/CommunityPost" },
+      "description": "Academic community discussions and posts"
+    },
+    "/diaries/{diaryId}": {
+      "schema": { "$ref": "#/entities/Diary" },
+      "description": "Student personal study diaries and notebooks"
+    }
+  }
+}
