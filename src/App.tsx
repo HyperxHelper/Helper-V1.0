@@ -1749,7 +1749,7 @@ export default function App() {
       </div>
 
       {/* NAVIGATION */}
-      <nav id="nav" className="fixed top-4 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-32px)] max-w-7xl flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border border-[#e8e2d9]/60 rounded-[28px] shadow-lg transition-all duration-300 relative">
+      <nav id="nav" dir="ltr" className="fixed top-4 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-32px)] max-w-7xl flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border border-[#e8e2d9]/60 rounded-[28px] shadow-lg transition-all duration-300 relative">
         {/* Left side: Navigation / Menu */}
         <div className="flex items-center gap-2">
           {/* Hamburger Menu for Mobile */}
@@ -1790,7 +1790,7 @@ export default function App() {
               {isUseHelperDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsUseHelperDropdownOpen(false)} />
-                  <div className="absolute end-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-start rtl:text-end">
+                  <div className="absolute right-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-start">
                     <button
                       type="button"
                       onClick={() => {
