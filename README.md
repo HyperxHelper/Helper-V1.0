@@ -245,6 +245,29 @@ The production build is a single Node.js process (Express serving static files) 
 
 ---
 
+## HummingBird V1.0
+
+**HummingBird V1.0** is a standalone interactive learning workspace built as a self-contained product within Helper. It provides a full-viewport, immersive study environment with no authentication required.
+
+### Features
+
+- **YouTube Video Player** — Load any YouTube video with integrated playback controls and timeline
+- **AI Academic Tutor** — Ask questions about the current lecture and get context-aware answers
+- **Timestamp-Linked Annotations** — Add notes, highlights, and questions at specific video timestamps
+- **Interactive Notepad** — Rich text notepad with automatic timestamp linking
+- **Multiple Notebooks** — Create and manage separate study notebooks per video
+- **Linked Resources** — Attach PDFs, links, images, and files to specific timestamps
+- **System Wikis** — Browse and search public study wikis published by the community
+- **AI Summary Generation** — Generate concise AI-powered summaries of video lectures
+- **Fullscreen Mode** — Immersive fullscreen workspace for focused studying
+- **Bilingual Support** — Full English and Arabic with RTL layout
+
+### Demo
+
+🔗 [HummingBird V1.0 Live Demo](https://hyperxhelper.github.io/Helper-V1.0/Product)
+
+---
+
 ## License
 
 This project is private. All rights reserved.
