@@ -30,8 +30,8 @@ const ai = new GoogleGenAI({
 // Initialize Firebase using Client SDK to bypass IAM environment limitations
 const configPath = "./firebase-applet-config.json";
 let firebaseConfig: any = {
-  projectId: "unified-fiber-wnzsc",
-  firestoreDatabaseId: "ai-studio-4483b167-0a36-475b-be80-ca1f4ebed4e6"
+  projectId: "YOUR_PROJECT_ID",
+  firestoreDatabaseId: "YOUR_DATABASE_ID"
 };
 
 if (fs.existsSync(configPath)) {
