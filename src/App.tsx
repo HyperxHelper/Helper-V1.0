@@ -1749,7 +1749,12 @@ export default function App() {
       </div>
 
       {/* NAVIGATION */}
-      <nav id="nav" dir="ltr" className="fixed top-4 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-32px)] max-w-7xl flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border border-[#e8e2d9]/60 rounded-[28px] shadow-lg transition-all duration-300 relative">
+      <nav 
+        id="nav" 
+        dir="ltr" 
+        style={{ position: "fixed", top: "16px", left: "50%", transform: "translateX(-50%)", direction: "ltr" }}
+        className="z-[1000] w-[calc(100%-32px)] max-w-7xl flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-md border border-[#e8e2d9]/60 rounded-[28px] shadow-lg transition-all duration-300"
+      >
         {/* Left side: Navigation / Menu */}
         <div className="flex items-center gap-2">
           {/* Hamburger Menu for Mobile */}

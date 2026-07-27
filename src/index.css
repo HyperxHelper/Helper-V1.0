@@ -144,6 +144,15 @@
   transform: scaleX(-1);
 }
 
+/* Force top navbar to always use LTR layout and stay centered regardless of parent dir */
+#nav {
+  direction: ltr !important;
+  text-align: left !important;
+}
+#nav * {
+  direction: ltr !important;
+}
+
 
 @theme {
   --color-h-bg: #faf8f5;
