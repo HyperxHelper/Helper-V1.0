@@ -1790,7 +1790,7 @@ export default function App() {
               {isUseHelperDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsUseHelperDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-left rtl:text-right">
+                  <div className="absolute end-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-start rtl:text-end">
                     <button
                       type="button"
                       onClick={() => {
@@ -1877,7 +1877,7 @@ export default function App() {
               <button 
                 onClick={handleLogout} 
                 className="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-full text-[#c45a3a] transition"
-                title="Logout"
+                title={lang === "ar" ? "تسجيل الخروج" : "Logout"}
               >
                 <LogOut className="w-4 h-4" />
               </button>
