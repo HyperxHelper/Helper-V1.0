@@ -48,7 +48,6 @@ import {
   Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { isDemoMode } from "./mockApi";
 import AdminPanel from "./components/AdminPanel";
 import HummingbirdWorkspace from "./components/HummingbirdWorkspace";
 import InteractiveNotebook from "./components/InteractiveNotebook";
@@ -485,7 +484,6 @@ export default function App() {
   const [aiAnswer, setAiAnswer] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiHistory, setAiHistory] = useState<{ query: string; answer: string }[]>([]);
-  const [demoMode, setDemoMode] = useState(isDemoMode.active);
 
   // Recent Wikis and Community Hub States
   const [helperSubView, setHelperSubView] = useState<"workspace" | "recent_wikis" | "hummingbird">("workspace");
@@ -1880,16 +1878,6 @@ export default function App() {
           )}
         </div>
       </nav>
-
-      {/* DEMO MODE BANNER */}
-      {demoMode && (
-        <div className="fixed top-[76px] left-1/2 -translate-x-1/2 z-[999] w-[calc(100%-32px)] max-w-7xl">
-          <div className="bg-gradient-to-r from-[#c45a3a] to-[#e07a5f] text-white py-2 px-4 rounded-2xl text-center text-xs font-bold shadow-lg flex items-center justify-center gap-2">
-            <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-            Demo Mode — Running on GitHub Pages with mock data. AI and database features are simulated.
-          </div>
-        </div>
-      )}
 
       {/* FLOATING SIDEBAR LANGUAGE SWITCHER */}
       <div className="fixed right-0 rtl:right-auto rtl:left-0 top-1/2 -translate-y-1/2 z-[1001] flex items-center pointer-events-none">
