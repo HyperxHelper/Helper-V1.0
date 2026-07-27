@@ -38,11 +38,13 @@ export default function ProductPage() {
     }
   };
 
+  const isRtl = lang === "ar";
+
   return (
-    <div className="product-page-root">
+    <div dir={isRtl ? "rtl" : "ltr"} className="product-page-root" style={{ direction: isRtl ? "rtl" : "ltr" }}>
       {/* Brand Header Bar */}
       <div className="bg-[#ffffff] border-b border-[#f0ebe4] px-4 md:px-6 py-3 flex items-center justify-between z-10 shrink-0">
-        {/* Left: Logo + Brand */}
+        {/* Logo + Brand */}
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 flex items-center justify-center shrink-0">
             <svg viewBox="0 0 100 45" className="w-9 h-9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,7 +60,7 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Right: Actions */}
+        {/* Actions */}
         <div className="flex items-center gap-2">
           {/* Language toggle */}
           <div className="bg-[#f5f0ea] border border-[#e8e2d9] rounded-full p-0.5 flex items-center w-24 h-9">
@@ -85,7 +87,7 @@ export default function ProductPage() {
           <button
             onClick={toggleFullscreen}
             className="w-9 h-9 rounded-full bg-[#f5f0ea] border border-[#e8e2d9] hover:bg-[#e8e2d9] flex items-center justify-center text-[#5c554d] hover:text-[#c45a3a] transition shadow-sm"
-            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            title={isFullscreen ? (isRtl ? "الخروج من وضع ملء الشاشة" : "Exit fullscreen") : (isRtl ? "ملء الشاشة" : "Enter fullscreen")}
           >
             {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
           </button>
@@ -95,8 +97,8 @@ export default function ProductPage() {
             href="/"
             className="flex items-center gap-1.5 text-xs font-bold text-[#8a8278] hover:text-[#c45a3a] bg-[#f5f0ea] hover:bg-[#e8e2d9] px-3 py-2 rounded-full transition-all shadow-sm"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Helper</span>
+            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+            <span className="hidden sm:inline">{isRtl ? "هيلبر" : "Helper"}</span>
           </a>
         </div>
       </div>

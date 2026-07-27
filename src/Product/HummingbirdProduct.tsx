@@ -534,7 +534,7 @@ export default function HummingbirdWorkspace({
         setIsCreateNotebookOpen(false);
         await loadUserNotebooks(notebookId);
       } else {
-        showToast("Error creating notebook", "error");
+        showToast(lang === "ar" ? "خطأ في إنشاء الدفتر" : "Error creating notebook", "error");
       }
     } catch (err) {
       console.error("Error creating notebook", err);
@@ -558,7 +558,7 @@ export default function HummingbirdWorkspace({
         showToast(lang === "ar" ? "تم حذف دفتر الملاحظات بنجاح" : "Notebook deleted successfully", "success");
         await loadUserNotebooks();
       } else {
-        showToast("Error deleting notebook", "error");
+        showToast(lang === "ar" ? "خطأ في حذف الدفتر" : "Error deleting notebook", "error");
       }
     } catch (err) {
       console.error("Error deleting notebook", err);
@@ -680,11 +680,11 @@ export default function HummingbirdWorkspace({
           setUserNotebooks(listData);
         }
       } else {
-        showToast("Error saving notebook on the server", "error");
+        showToast(lang === "ar" ? "خطأ في حفظ الدفتر على الخادم" : "Error saving notebook on the server", "error");
       }
     } catch (err) {
       console.error("Error saving notebook", err);
-      showToast("Error saving notebook synchronously", "error");
+      showToast(lang === "ar" ? "خطأ في حفظ الدفتر متزامناً" : "Error saving notebook synchronously", "error");
     } finally {
       setIsDraftSaving(false);
     }
@@ -727,7 +727,7 @@ export default function HummingbirdWorkspace({
         showToast(lang === "ar" ? "تم النشر! ملخصك متاح الآن في الويكي العام للطلاب!" : "Published! Your workbook is now active on public study wikis!", "success");
         fetchRecentWikis();
       } else {
-        showToast("Error publishing wiki", "error");
+        showToast(lang === "ar" ? "خطأ في نشر الويكي" : "Error publishing wiki", "error");
       }
     } catch (err) {
       console.error("Error publishing wiki", err);
@@ -772,7 +772,7 @@ export default function HummingbirdWorkspace({
       }
     } catch (e) {
       setNotepadText(wiki.content);
-      showToast("Loaded wiki text contents", "info");
+      showToast(lang === "ar" ? "تم تحميل محتوى الويكي النصي" : "Loaded wiki text contents", "info");
     }
   };
 
@@ -2179,7 +2179,7 @@ export default function HummingbirdWorkspace({
                     </h4>
                     <div className="flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#2d8a6e] animate-pulse" />
-                      <span className="text-[8px] font-bold text-[#2d8a6e] uppercase tracking-wider">Gemini 1.5 Flash Connected</span>
+                      <span className="text-[8px] font-bold text-[#2d8a6e] uppercase tracking-wider">{lang === "ar" ? "موصل Gemini 1.5 Flash" : "Gemini 1.5 Flash Connected"}</span>
                     </div>
                   </div>
                 </div>
@@ -2189,7 +2189,7 @@ export default function HummingbirdWorkspace({
                       role: "assistant",
                       text: lang === "ar" ? "مرحباً! كيف يمكنني مساعدتك الأكاديمية اليوم؟" : "Hello! How can I assist your studies today?"
                     }]);
-                    showToast("Chat history cleared");
+                    showToast(lang === "ar" ? "تم مسح سجل المحادثة" : "Chat history cleared");
                   }}
                   className="text-[9px] font-extrabold text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 rounded-lg px-2 py-1 transition"
                 >
@@ -2207,7 +2207,7 @@ export default function HummingbirdWorkspace({
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-[10px] shrink-0 select-none ${
                       msg.role === "user" ? "bg-[#c45a3a]/15 text-[#c45a3a]" : "bg-[#2d8a6e]/15 text-[#2d8a6e]"
                     }`}>
-                      {msg.role === "user" ? "Me" : "AI"}
+                      {msg.role === "user" ? (lang === "ar" ? "أنا" : "Me") : (lang === "ar" ? "الذكاء" : "AI")}
                     </div>
                     
                     <div className={`p-3 rounded-2xl text-[11px] font-semibold leading-relaxed text-left rtl:text-right ${

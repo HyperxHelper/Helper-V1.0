@@ -726,11 +726,11 @@ export default function App() {
           "success"
         );
       } else {
-        showToast("Failed to create playlist.", "error");
+        showToast(lang === "ar" ? "فشل إنشاء قائمة التشغيل." : "Failed to create playlist.", "error");
       }
     } catch (e) {
       console.error(e);
-      showToast("Error creating playlist.", "error");
+      showToast(lang === "ar" ? "خطأ في إنشاء قائمة التشغيل." : "Error creating playlist.", "error");
     }
   };
 
@@ -770,14 +770,14 @@ export default function App() {
             "success"
           );
         } else {
-          showToast("AI returned an empty draft.", "error");
+          showToast(lang === "ar" ? "الذكاء الاصطناعي أعاد مسودة فارغة." : "AI returned an empty draft.", "error");
         }
       } else {
-        showToast("Drafting failed.", "error");
+        showToast(lang === "ar" ? "فشلت عملية المسودة." : "Drafting failed.", "error");
       }
     } catch (e) {
       console.error("Error drafting note:", e);
-      showToast("Error communicating with note-drafting engine.", "error");
+      showToast(lang === "ar" ? "خطأ في الاتصال بمحرك المسودات." : "Error communicating with note-drafting engine.", "error");
     } finally {
       setIsDraftingNote(false);
     }
@@ -930,7 +930,7 @@ export default function App() {
       }
     } catch (e) {
       console.error(e);
-      showToast("Error saving diary.", "error");
+      showToast(lang === "ar" ? "خطأ في حفظ اليومية." : "Error saving diary.", "error");
     } finally {
       setIsDiarySaving(false);
     }
@@ -1174,7 +1174,7 @@ export default function App() {
           return;
         }
       } catch (err) {
-        showToast("Admin authentication failed.", "error");
+        showToast(lang === "ar" ? "فشلت مصادقة المسؤول." : "Admin authentication failed.", "error");
         return;
       }
     }
@@ -1258,7 +1258,7 @@ export default function App() {
       
       // Fallback guest check if Firebase failed to contact servers or was offline
       if (e.code === "auth/network-request-failed" || !fbAuth) {
-        showToast("Authentication server offline. Continuing in guest mode.", "info");
+        showToast(lang === "ar" ? "خادم المصادقة غير متصل. المتابعة كضيف." : "Authentication server offline. Continuing in guest mode.", "info");
         const guestUser: UserSession = {
           uid: "guest_" + Math.random().toString(36).substr(2, 5),
           email: authEmail,
@@ -1443,7 +1443,7 @@ export default function App() {
         );
       }
     } catch (e) {
-      showToast("Offline note added to notebook.", "success");
+      showToast(lang === "ar" ? "تمت إضافة الملاحظة محلياً." : "Offline note added to notebook.", "success");
       // local mock
       const mockNote: NoteDoc = {
         id: Math.random().toString(),
@@ -1472,7 +1472,7 @@ export default function App() {
       }
     } catch (e) {
       setNotes(prev => prev.filter(note => note.id !== id));
-      showToast("Note deleted locally.", "success");
+      showToast(lang === "ar" ? "تم حذف الملاحظة محلياً." : "Note deleted locally.", "success");
     }
   };
 
@@ -1495,7 +1495,7 @@ export default function App() {
       if (activeVideo?.id === id) {
         setActiveVideo(null);
       }
-      showToast("Video removed locally.", "success");
+      showToast(lang === "ar" ? "تمت إزالة الفيديو محلياً." : "Video removed locally.", "success");
     }
   };
 
@@ -1552,7 +1552,7 @@ export default function App() {
       setResTitle("");
       setResUrl("");
       setIsAddResourceOpen(false);
-      showToast("Resource added locally", "success");
+      showToast(lang === "ar" ? "تمت إضافة المورد محلياً." : "Resource added locally.", "success");
     }
   };
 
@@ -1591,7 +1591,7 @@ export default function App() {
       };
       setComments(prev => [...prev, mockComment]);
       setNewCommentText("");
-      showToast("Comment added", "success");
+      showToast(lang === "ar" ? "تمت إضافة التعليق." : "Comment added.", "success");
     }
   };
 
@@ -1621,10 +1621,10 @@ export default function App() {
         setIsAddVideoOpen(false);
         showToast(lang === "ar" ? "تمت إضافة الدرس الجديد بنجاح!" : "New video notebook created!", "success");
       } else {
-        showToast("Error processing YouTube link. Try again.", "error");
+        showToast(lang === "ar" ? "خطأ في معالجة رابط يوتيوب. حاول مرة أخرى." : "Error processing YouTube link. Try again.", "error");
       }
     } catch (e) {
-      showToast("Fallback mock video added.", "success");
+      showToast(lang === "ar" ? "تمت إضافة فيديو تجريبي افتراضي." : "Fallback mock video added.", "success");
       const tempId = extractYoutubeId(newVideoUrl);
       const mockVid: VideoDoc = {
         id: tempId,
@@ -1672,11 +1672,11 @@ export default function App() {
         setAiHistory(prev => [...prev, { query: currentPrompt, answer: data.answer }]);
         showToast(lang === "ar" ? "تمت إجابة مساعدك الذكي!" : "AI assistant responded!", "success");
       } else {
-        showToast("AI model limits. Check secret panel keys.", "error");
-        setAiAnswer("Helper AI is currently offline. Please ensure your GEMINI_API_KEY is configured in the secrets menu.");
+        showToast(lang === "ar" ? "حدود نموذج الذكاء الاصطناعي. تحقق من مفاتيح السر." : "AI model limits. Check secret panel keys.", "error");
+        setAiAnswer(lang === "ar" ? "مساعد هيلبر غير متاح حالياً. يرجى التأكد من تكوين GEMINI_API_KEY في قائمة الأسرار." : "Helper AI is currently offline. Please ensure your GEMINI_API_KEY is configured in the secrets menu.");
       }
     } catch (err) {
-      setAiAnswer("Server connection issue. Could not generate academic answer.");
+      setAiAnswer(lang === "ar" ? "مشكلة في الاتصال بالخادم. تعذر توليد إجابة أكاديمية." : "Server connection issue. Could not generate academic answer.");
     } finally {
       setIsAiLoading(false);
     }
@@ -1713,7 +1713,7 @@ export default function App() {
   };
 
   return (
-    <React.Suspense fallback={<div className="min-h-screen bg-[#faf8f5] flex items-center justify-center"><span className="text-xs font-bold text-[#8a8278]">Loading...</span></div>}>
+    <React.Suspense fallback={<div className="min-h-screen bg-[#faf8f5] flex items-center justify-center"><span className="text-xs font-bold text-[#8a8278]">{isRtl ? "جاري التحميل..." : "Loading..."}</span></div>}>
     {productMode ? (
       <ProductPage />
     ) : (
@@ -1732,9 +1732,9 @@ export default function App() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: isRtl ? -50 : 50, scale: 0.9 }}
               className={`flex items-center gap-3 px-5 py-4 bg-white border rounded-xl shadow-xl max-w-sm ${
-                toast.type === "success" ? "border-l-4 border-l-[#5a8a6e]" : 
-                toast.type === "error" ? "border-l-4 border-l-[#c45a3a]" : 
-                "border-l-4 border-l-[#3b6ea5]"
+                toast.type === "success" ? "border-l-4 border-l-[#5a8a6e] rtl:border-l-0 rtl:border-r-4 rtl:border-r-[#5a8a6e]" : 
+                toast.type === "error" ? "border-l-4 border-l-[#c45a3a] rtl:border-l-0 rtl:border-r-4 rtl:border-r-[#c45a3a]" : 
+                "border-l-4 border-l-[#3b6ea5] rtl:border-l-0 rtl:border-r-4 rtl:border-r-[#3b6ea5]"
               }`}
             >
               <div className="flex-1 text-sm font-medium text-[#1a1612]">
@@ -3309,11 +3309,11 @@ export default function App() {
                 >
                   {plan.featured && (
                     <span className="absolute top-0 right-0 rtl:right-auto rtl:left-0 bg-[#c45a3a] text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-xl rtl:rounded-bl-none rtl:rounded-br-xl">
-                      Most Popular
+                      {lang === "ar" ? "الأكثر شعبية" : "Most Popular"}
                     </span>
                   )}
                   <h4 className="text-xs font-black uppercase text-[#8a8278] tracking-widest mb-2">{plan.title}</h4>
-                  <div className="text-3xl font-black text-[#1a1612] mb-3">{plan.price}<span className="text-xs text-gray-400 font-normal">/mo</span></div>
+                  <div className="text-3xl font-black text-[#1a1612] mb-3">{plan.price}<span className="text-xs text-gray-400 font-normal">{lang === "ar" ? "/شهرياً" : "/mo"}</span></div>
                   <p className="text-xs text-[#5c554d] leading-relaxed mb-6 h-12">{plan.desc}</p>
                   <ul className="flex flex-col gap-3 mb-8">
                     {plan.features.map((f, i) => (
@@ -3360,18 +3360,18 @@ export default function App() {
               </div>
 
               <div>
-                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">Product</h5>
+                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">{lang === "ar" ? "المنتج" : "Product"}</h5>
                 <div className="flex flex-col gap-2">
-                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#features"; }, 50); }} className="text-start text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "المميزات" : "Features"}</button>
-                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#pricing"; }, 50); }} className="text-start text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "الأسعار" : "Pricing"}</button>
-                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#demo"; }, 50); }} className="text-start text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "التجربة الحية" : "Workspace Demo"}</button>
+                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#features"; }, 50); }} className="text-start rtl:text-end text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "المميزات" : "Features"}</button>
+                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#pricing"; }, 50); }} className="text-start rtl:text-end text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "الأسعار" : "Pricing"}</button>
+                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#demo"; }, 50); }} className="text-start rtl:text-end text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "التجربة الحية" : "Workspace Demo"}</button>
                 </div>
               </div>
 
               <div>
-                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">Resources</h5>
+                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">{lang === "ar" ? "الموارد" : "Resources"}</h5>
                 <div className="flex flex-col gap-2">
-                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#how-it-works"; }, 50); }} className="text-start text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "كيف نعمل" : "How it works"}</button>
+                  <button onClick={() => { setCurrentView("landing"); setTimeout(() => { window.location.hash = "#how-it-works"; }, 50); }} className="text-start rtl:text-end text-xs text-[#5c554d] hover:text-[#c45a3a]">{lang === "ar" ? "كيف نعمل" : "How it works"}</button>
                   <a href="#database-schema" className="text-xs text-[#c45a3a] font-bold hover:underline flex items-center gap-1">
                     <Database className="w-3 h-3" />
                     {lang === "ar" ? "مخطط قاعدة البيانات" : "Database Schema"}
@@ -3384,17 +3384,37 @@ export default function App() {
               </div>
 
               <div>
-                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">Architecture</h5>
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs text-[#8a8278]">{lang === "ar" ? "تكامل Google Workspace" : "Workspace Integration"}</span>
-                  <span className="text-xs text-[#8a8278]">{lang === "ar" ? "بنية Firestore السحابية" : "Cloud Firestore Architecture"}</span>
-                  <span className="text-xs text-[#8a8278]">{lang === "ar" ? "الشروط والخصوصية" : "Terms & Privacy"}</span>
+                <h5 className="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-4">{lang === "ar" ? "حمّل التطبيق" : "Download the App"}</h5>
+                <div className="flex flex-col gap-3">
+                  <span className="text-xs text-[#8a8278] mb-1">{lang === "ar" ? "قريباً على متجر التطبيقات" : "Coming soon to app stores"}</span>
+                  <div className="flex gap-2">
+                    {/* App Store Badge */}
+                    <div className="flex items-center gap-1.5 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                      </svg>
+                      <div className="flex flex-col leading-none">
+                        <span className="text-[8px] opacity-80">{lang === "ar" ? "حمّل من" : "Download on the"}</span>
+                        <span className="text-[11px] font-bold">App Store</span>
+                      </div>
+                    </div>
+                    {/* Play Store Badge */}
+                    <div className="flex items-center gap-1.5 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition cursor-pointer">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302-2.302 2.302L15.396 12l2.302-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z"/>
+                      </svg>
+                      <div className="flex flex-col leading-none">
+                        <span className="text-[8px] opacity-80">{lang === "ar" ? "احصل عليه من" : "GET IT ON"}</span>
+                        <span className="text-[11px] font-bold">Google Play</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="max-w-7xl mx-auto border-t border-[#e8e2d9] pt-8 mt-12 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-400">
-              <p>© 2026 Helper Inc. All rights reserved. Made with ❤️ in Tunisia.</p>
+              <p>{lang === "ar" ? "© ٢٠٢٦ هيلبر. جميع الحقوق محفوظة. صُنع بـ ❤️ في تونس." : "© 2026 Helper Inc. All rights reserved. Made with ❤️ in Tunisia."}</p>
               <div className="flex gap-4">
                 <span>Twitter</span>
                 <span>GitHub</span>

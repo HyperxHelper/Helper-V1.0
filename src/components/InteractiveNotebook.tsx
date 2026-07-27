@@ -330,7 +330,7 @@ export default function InteractiveNotebook({
                       <button 
                         onClick={() => setActivePlaylist(null)}
                         className="p-1 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition"
-                        title="Exit playlist filter"
+                        title={lang === "ar" ? "إلغاء تصفية قائمة التشغيل" : "Exit playlist filter"}
                       >
                         <ArrowLeft className="w-4 h-4" />
                       </button>
@@ -412,7 +412,7 @@ export default function InteractiveNotebook({
                   {playlists.length === 0 ? (
                     <div className="text-center py-12 text-xs text-gray-400">
                       {lang === "ar"
-                        ? "لا توجد قوائم تشغيل مدونة بعد. أنشئ قائمتك الأولى!"
+                        ? "لا توجد قوائم تشغيل منشأة بعد. أنشئ قائمتك الأولى!"
                         : "No shareable playlists created yet. Create your first one!"}
                     </div>
                   ) : (
@@ -461,7 +461,7 @@ export default function InteractiveNotebook({
           <div className="pt-4 border-t border-[#e8e2d9] mt-6">
             <div className="p-4 bg-[#f5f0ea] rounded-2xl">
               <h5 className="font-bold text-xs text-[#1a1612] mb-1">
-                {lang === "ar" ? "قائمة ويكي للدرس" : "Playlist wiki wiki"}
+                {lang === "ar" ? "قائمة ويكي للدرس" : "Playlist Wiki"}
               </h5>
               <p className="text-[10px] text-[#5c554d] leading-relaxed">
                 {lang === "ar"
@@ -532,7 +532,7 @@ export default function InteractiveNotebook({
                   </div>
                   <input 
                     type="text" 
-                    placeholder={lang === "ar" ? "أكتب ملاحظة لتثبيتها في هذه اللحظة..." : "Type a note pinned to current second..."}
+                    placeholder={lang === "ar" ? "اكتب ملاحظة لتثبيتها في هذه اللحظة..." : "Type a note pinned to current second..."}
                     value={newNoteText}
                     onChange={(e) => setNewNoteText(e.target.value)}
                     className="flex-1 bg-transparent px-2 outline-none text-xs text-[#1a1612]"
@@ -572,7 +572,7 @@ export default function InteractiveNotebook({
                 <div className="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-1 rtl:pr-0 rtl:pl-1">
                   {notes.length === 0 ? (
                     <div className="text-center py-12 text-xs text-gray-400">
-                      {lang === "ar" ? "لا توجد ملاحظات مدونة بعد. كن أول من يكتب ملاحظة!" : "No notes taken yet. Write your first note above!"}
+                      {lang === "ar" ? "لا توجد ملاحظات مسجلة بعد. كن أول من يكتب ملاحظة!" : "No notes taken yet. Write your first note above!"}
                     </div>
                   ) : (
                     [...notes]
@@ -616,7 +616,7 @@ export default function InteractiveNotebook({
                                 handleTogglePinNote(note.id, !!note.isPinned);
                               }}
                               className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-[#c45a3a]"
-                              title={note.isPinned ? "Unpin note" : "Pin note to top"}
+                              title={note.isPinned ? (lang === "ar" ? "إلغاء تثبيت الملاحظة" : "Unpin note") : (lang === "ar" ? "تثبيت الملاحظة في الأعلى" : "Pin note to top")}
                             >
                               <Pin className={`w-3.5 h-3.5 ${note.isPinned ? "fill-[#c45a3a] text-[#c45a3a]" : ""}`} />
                             </button>
@@ -630,7 +630,7 @@ export default function InteractiveNotebook({
                                 }
                               }}
                               className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500"
-                              title="Delete note"
+                              title={lang === "ar" ? "حذف الملاحظة" : "Delete note"}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -786,7 +786,7 @@ export default function InteractiveNotebook({
                         <Save className="w-4 h-4" />
                         {isDiarySaving 
                           ? (lang === "ar" ? "جاري الحفظ..." : "Saving...")
-                          : (lang === "ar" ? "حفظ ومزامنة سحابياً" : "Save Diary & Sync")}
+                          : (lang === "ar" ? "حفظ ومزامنة مع السحابة" : "Save Diary & Sync")}
                       </button>
                     </div>
                   </form>
@@ -808,7 +808,7 @@ export default function InteractiveNotebook({
                             <div>
                               <h5 className="font-extrabold text-xs text-[#1a1612] line-clamp-1">{diary.title}</h5>
                               <span className="text-[9px] text-gray-400 font-mono block">
-                                {new Date(diary.createdAt).toLocaleDateString()} · {diary.videoTitle || "No linked video"}
+                                {new Date(diary.createdAt).toLocaleDateString()} · {diary.videoTitle || (lang === "ar" ? "لا يوجد فيديو مرتبط" : "No linked video")}
                               </span>
                             </div>
                             <div className="flex gap-1 shrink-0">
@@ -826,7 +826,7 @@ export default function InteractiveNotebook({
                                   );
                                 }}
                                 className="px-2 py-1 bg-gray-100 hover:bg-[#c45a3a]/10 hover:text-[#c45a3a] text-gray-600 font-bold text-[10px] rounded-lg transition"
-                                title="Restore diary to editor"
+                                title={lang === "ar" ? "استرجاع اليومية إلى المحرر" : "Restore diary to editor"}
                               >
                                 {lang === "ar" ? "استرجاع" : "Restore"}
                               </button>
@@ -834,7 +834,7 @@ export default function InteractiveNotebook({
                                 type="button"
                                 onClick={() => handleShareDiary(diary)}
                                 className="p-1 text-gray-400 hover:text-[#3b6ea5] transition"
-                                title="Share diary"
+                                title={lang === "ar" ? "مشاركة اليومية" : "Share diary"}
                               >
                                 <Share2 className="w-4 h-4" />
                               </button>
@@ -842,7 +842,7 @@ export default function InteractiveNotebook({
                                 type="button"
                                 onClick={() => handleDeleteDiary(diary.id)}
                                 className="p-1 text-gray-400 hover:text-red-500 transition"
-                                title="Delete diary"
+                                title={lang === "ar" ? "حذف اليومية" : "Delete diary"}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -869,7 +869,7 @@ export default function InteractiveNotebook({
                     {wikis.length === 0 ? (
                       <div className="text-center py-12 text-xs text-gray-400">
                         🌐 {lang === "ar" 
-                          ? "لا توجد ملخصات ويكي عامة منشورة لهذا الدرس بعد." 
+                          ? "لا توجد ملخصات ويكي عامة منشورة لهذا الدرس بعد. كن أول من ينشر!" 
                           : "No standardized public wikis created for this video yet. Be the first!"}
                       </div>
                     ) : (
@@ -900,7 +900,7 @@ export default function InteractiveNotebook({
                               }}
                               className="px-2.5 py-1 bg-[#5a8a6e]/10 text-[#5a8a6e] hover:bg-[#5a8a6e]/20 font-bold text-[10px] rounded-lg transition shrink-0"
                             >
-                              📥 {lang === "ar" ? "نسخ لمذكرتي" : "Copy to editor"}
+                              📥 {lang === "ar" ? "نسخ إلى المحرر" : "Copy to editor"}
                             </button>
                           </div>
                           <p className="text-[11px] text-gray-500 whitespace-pre-wrap leading-relaxed max-h-[120px] overflow-y-auto bg-gray-50 p-2.5 rounded-xl border border-[#e8e2d9] text-left rtl:text-right">
@@ -997,10 +997,10 @@ export default function InteractiveNotebook({
                           onChange={(e) => setResType(e.target.value as any)}
                           className="bg-white border p-2.5 rounded-xl text-xs outline-none"
                         >
-                          <option value="pdf">PDF Document</option>
-                          <option value="link">Website Link</option>
-                          <option value="image">Screenshot Image</option>
-                          <option value="excel">Excel/Sheet</option>
+                          <option value="pdf">{lang === "ar" ? "مستند PDF" : "PDF Document"}</option>
+                          <option value="link">{lang === "ar" ? "رابط ويب" : "Website Link"}</option>
+                          <option value="image">{lang === "ar" ? "صورة لقطة شاشة" : "Screenshot Image"}</option>
+                          <option value="excel">{lang === "ar" ? "جدول بيانات" : "Excel/Sheet"}</option>
                         </select>
                         <input 
                           type="text" 
@@ -1059,7 +1059,7 @@ export default function InteractiveNotebook({
                 <form onSubmit={handleAddComment} className="flex gap-2">
                   <input 
                     type="text" 
-                    placeholder={lang === "ar" ? "أكتب مشاركة في النقاش الجماعي..." : "Type your classroom comment..."}
+                    placeholder={lang === "ar" ? "اكتب مشاركة في النقاش الجماعي..." : "Type your classroom comment..."}
                     value={newCommentText}
                     onChange={(e) => setNewCommentText(e.target.value)}
                     className="flex-1 bg-white border px-4 py-3 text-xs rounded-2xl outline-none focus:border-[#c45a3a]"
@@ -1115,7 +1115,7 @@ export default function InteractiveNotebook({
               <div className="bg-white p-4 border rounded-2xl mb-4 shadow-sm text-left rtl:text-right">
                 <p className="text-[11px] text-[#5c554d] leading-relaxed">
                   {lang === "ar"
-                    ? "مرحباً! اسألني أي سؤال حول درس الفيديو وسأقوم بتحليل النص الكامل والملاحظات المدونة لإجابتك في سياق الدرس."
+                    ? "مرحباً! اسألني أي سؤال حول درس الفيديو وسأقوم بتحليل النص الكامل والملاحظات المحفوظة لإجابتك في سياق الدرس."
                     : "Ask me any academic question. I'll read the lecture transcript and notebook entries to provide a highly contextual answer!"
                   }
                 </p>
