@@ -1,6 +1,0 @@
-{
-  "name": "Helper Video Notebook",
-  "description": "A collaborative, timestamp-linked video notebook and study wiki with AI-powered academic co-pilot and bilingual translations.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

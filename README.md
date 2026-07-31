@@ -2,42 +2,39 @@
   <img src="public/favicon.svg" alt="Helper Logo" width="120" />
 </p>
 
-<h1 align="center">Helper</h1>
+<h1 align="center">Helper Hummingbird v1.0</h1>
 
 <p align="center">
-  <strong>A collaborative, timestamp-linked video notebook and study wiki with an AI-powered academic co-pilot and bilingual translations.</strong>
+  <strong>A full-screen, timestamp-linked video notebook with an AI academic tutor, bilingual (English / Arabic) RTL support, and community study wikis.</strong>
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> · <a href="#quick-start">Quick Start</a> · <a href="#tech-stack">Tech Stack</a> · <a href="#project-structure">Structure</a> · <a href="#deployment">Deployment</a> · <a href="#environment-variables">Env Vars</a>
+  <a href="#features">Features</a> · <a href="#quick-start">Quick Start</a> · <a href="#project-structure">Structure</a> · <a href="#github-pages">GitHub Pages</a> · <a href="#desktop-app">Desktop App</a> · <a href="#optional-backend">Backend</a>
 </p>
 
 ---
 
-## What is Helper?
+## What is Helper Hummingbird?
 
-Helper is a full-stack educational platform that turns any YouTube video lesson into a **collaborative notebook workspace**. Students and teachers can annotate timestamps, attach resources, build shared playlists, generate AI transcripts, and publish public study wikis — all backed by Firebase Firestore and Google Gemini AI.
+**Helper Hummingbird v1.0** is a self-contained, full-screen interactive learning workspace. Load any YouTube lesson and turn it into a rich study notebook — annotate timestamps, draft notes, generate AI summaries, chat with an AI tutor, and publish public study wikis.
 
-Built bilingually (English / Arabic) with full RTL support, Helper is designed for academic communities that need a structured, searchable knowledge layer on top of video lectures.
+Built on **TypeScript + React 19** with a clean, single-component architecture. No authentication is required to use it, and it runs **entirely in the browser** — including on static hosts such as GitHub Pages — thanks to an offline demo-mode API.
 
 ---
 
 ## Features
 
-- **Timestamp-Linked Notes** — Attach study notes to exact video playback seconds
-- **AI Academic Assistant** — Ask questions about the current lecture and get context-aware answers via Gemini
-- **AI Transcript Generation** — Auto-generate structured transcripts for any YouTube video
-- **AI Note Drafting** — Generate synchronized study notes aligned to the current playback timestamp
-- **Bilingual Translation** — Translate notes between English and Arabic with one click
-- **Study Diaries & Public Wikis** — Write personal study diaries or publish them as community wikis
-- **Shareable Playlists** — Build and share video playlists with unique URLs
-- **Resource Attachments** — Link PDFs, spreadsheets, images, and external URLs to specific timestamps
-- **Community Discussions** — Create topic-threaded discussion posts with upvotes and threaded replies
-- **Real-Time Activity Logs** — Track all academic interactions across the platform
-- **Admin Dashboard** — Manage users, videos, categories, and system settings
-- **Role-Based Auth** — Student, Teacher, and Admin roles with Firebase Auth
-- **Full RTL Support** — Arabic-first typography using the Thmanyah typeface family
-- **Responsive Design** — Works beautifully on desktop, tablet, and mobile
+- **Full-Screen Workspace** — Immersive, distraction-free study environment with a one-click fullscreen toggle
+- **YouTube Video Player** — Load any YouTube video with integrated playback controls and timeline
+- **AI Academic Tutor** — Ask questions about the current lecture and get context-aware answers
+- **Timestamp-Linked Annotations** — Add notes, highlights, and study questions at exact video timestamps
+- **Interactive Notepad** — Rich notepad with automatic timestamp linking and AI-drafted notes
+- **Multiple Notebooks** — Create and manage separate study notebooks per video
+- **Linked Resources** — Attach PDFs, links, images, and files to specific timestamps
+- **System Wikis** — Browse, search, and publish public study wikis to the community
+- **AI Summary Generation** — Generate concise AI-powered summaries of video lectures
+- **Bilingual & RTL** — Full English and Arabic with proper right-to-left layout and the Thmanyah typeface
+- **Offline Demo Mode** — Works without a backend via a built-in mock API (ideal for GitHub Pages)
 
 ---
 
@@ -46,77 +43,29 @@ Built bilingually (English / Arabic) with full RTL support, Helper is designed f
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v18+ (or [Bun](https://bun.sh/))
-- A [Firebase](https://firebase.google.com/) project with Firestore enabled
-- A [Google AI Studio](https://aistudio.google.com/) Gemini API key
 
-### 1. Clone & Install
+### 1. Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/helper-v1.0.git
-cd helper-v1.0
 npm install
 ```
 
-### 2. Configure Environment
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in:
-
-```env
-GEMINI_API_KEY="your_gemini_api_key_here"
-APP_URL="http://localhost:3000"
-```
-
-### 3. Configure Firebase
-
-Replace the contents of `firebase-applet-config.json` with your own Firebase project config:
-
-```json
-{
-  "projectId": "your-project-id",
-  "appId": "your-app-id",
-  "apiKey": "your-api-key",
-  "authDomain": "your-project.firebaseapp.com",
-  "firestoreDatabaseId": "your-database-id",
-  "storageBucket": "your-project.appspot.com",
-  "messagingSenderId": "your-sender-id"
-}
-```
-
-### 4. Run Development Server
+### 2. Run in development
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Opens at [http://localhost:5173](http://localhost:5173). Without a backend, the app automatically boots into **demo mode** (offline mock API).
 
-### 5. Build for Production
+### 3. Production build & preview
 
 ```bash
 npm run build
-npm start
+npm run preview
 ```
 
-The production build serves from `dist/` on port 3000.
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 19, TypeScript, Tailwind CSS 4, Framer Motion |
-| **Backend** | Express.js, Node.js |
-| **Database** | Cloud Firestore (Firebase Client SDK) |
-| **Authentication** | Firebase Auth (email/password) |
-| **AI Engine** | Google Gemini via `@google/genai` |
-| **Video Player** | YouTube IFrame API |
-| **Build** | Vite, esbuild |
-| **Typography** | Thmanyah typeface (Arabic), Inter (English) |
+The build emits a fully static site in `dist/` that can be hosted anywhere.
 
 ---
 
@@ -124,147 +73,90 @@ The production build serves from `dist/` on port 3000.
 
 ```
 helper-v1.0/
+├── index.html                    # HTML entry (Helper Hummingbird v1.0)
+├── vite.config.ts                # Vite + React + Tailwind config (relative base for sub-path hosting)
+├── tsconfig.json                 # TypeScript config
+├── package.json                  # Scripts & dependencies
 ├── public/
-│   ├── favicon.svg              # Helper logo (SVG)
-│   └── fonts/                   # Thmanyah typeface files
-├── src/
-│   ├── App.tsx                  # Main application (4200+ lines)
-│   ├── main.tsx                 # React entry point
-│   ├── index.css                # Tailwind + custom CSS + RTL styles
-│   └── components/
-│       ├── AdminPanel.tsx       # Admin dashboard (users, videos, settings)
-│       ├── HummingbirdWorkspace.tsx  # Standalone notebook workspace
-│       └── InteractiveNotebook.tsx   # Playlist & note management UI
-├── server.ts                    # Express backend (API routes + Gemini)
-├── firebase-applet-config.json  # Firebase client config
-├── firebase-blueprint.json      # Firestore schema definition
-├── firestore.rules              # Firestore security rules
-├── index.html                   # Vite HTML entry
-├── vite.config.ts               # Vite configuration
-├── tsconfig.json                # TypeScript config
-├── package.json                 # Dependencies & scripts
-└── .env.example                 # Environment variable template
+│   ├── favicon.svg               # Helper logo
+│   └── fonts/                    # Thmanyah typeface (Arabic-first typography)
+└── src/
+    ├── main.tsx                  # Bootstrap: render Product (offline demo mode needs no backend)
+    ├── product.tsx               # The single app page — full-screen "Helper Hummingbird v1.0" shell
+    ├── index.css                 # Tailwind + custom CSS + RTL rules
+    ├── mockApi.ts                # Client-side mock API (every feature works offline)
+    ├── data/
+    │   └── catalog.ts            # Typed video catalog (YouTube lectures by category)
+    └── components/
+        └── HummingbirdWorkspace.tsx   # Canonical video notebook workspace (player, notes, AI, wikis)
 ```
 
----
+The codebase is deliberately small and single-purpose:
 
-## API Endpoints
+- **`product.tsx`** is the *only* page. It provides the full-screen shell, the EN/AR language toggle wiring, the document-level fullscreen button, and the demo-mode badge, then renders the canonical workspace.
+- **`HummingbirdWorkspace.tsx`** is the *only* Video Notebook implementation. It owns the YouTube player, annotations, notepad, notebooks, resources, AI tutor, summaries, and wikis.
+- **`mockApi.ts`** intercepts `/api/*` fetch calls so every feature works without a server.
+- **`catalog.ts`** centralizes the seeded lecture catalog with TypeScript types.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/videos` | List all videos |
-| `POST` | `/api/videos` | Add a YouTube video |
-| `GET` | `/api/videos/:id/notes` | Get timestamped notes |
-| `POST` | `/api/videos/:id/notes` | Add a note |
-| `POST` | `/api/notes/:id/pin` | Pin/unpin a note |
-| `GET` | `/api/videos/:id/resources` | Get attached resources |
-| `POST` | `/api/videos/:id/resources` | Attach a resource |
-| `GET` | `/api/videos/:id/comments` | Get comments |
-| `POST` | `/api/videos/:id/comments` | Add a comment |
-| `GET/POST` | `/api/videos/:id/activities` | Activity logs |
-| `POST` | `/api/ai/ask` | Ask AI about the video |
-| `POST` | `/api/ai/transcript` | Generate AI transcript |
-| `POST` | `/api/ai/draft-note` | AI note drafting |
-| `POST` | `/api/ai/translate` | Translate text |
-| `GET/POST` | `/api/playlists` | Manage playlists |
-| `GET/POST` | `/api/diaries` | Study diaries |
-| `GET` | `/api/wikis` | Public community wikis |
-| `GET/POST` | `/api/community-posts` | Community discussions |
-| `POST` | `/api/community-posts/:id/vote` | Upvote/downvote |
-| `POST` | `/api/community-posts/:id/responses` | Reply to post |
-| `POST` | `/api/auth/register` | Register user |
-| `POST` | `/api/auth/login` | Login |
-| `GET` | `/api/admin/stats` | Admin dashboard stats |
-| `GET` | `/api/admin/users` | List all users |
-| `POST` | `/api/admin/users/:uid/role` | Change user role |
-| `DELETE` | `/api/admin/users/:uid` | Delete user |
+> Previous iterations (the marketing landing page, `InteractiveNotebook`, `AdminPanel`, and the duplicated `Product/HummingbirdProduct`) were removed to keep a single clean Video Notebook code path.
 
 ---
 
-## Environment Variables
+## GitHub Pages
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key for AI features |
-| `APP_URL` | No | Application URL (defaults to `http://localhost:3000`) |
+Hosting is automatic via the included workflow (`.github/workflows/deploy.yml`):
 
----
+1. Push to the `main` branch — or trigger **Actions → Deploy to GitHub Pages → Run workflow**.
+2. The site builds with `vite build` (relative asset base, so it works under `/Helper-V1.0/`).
+3. Enable GitHub Pages in **repo Settings → Pages** with the **GitHub Actions** source if not already set.
 
-## Default Admin Access
+Live demo: `https://<username>.github.io/Helper-V1.0/`
 
-Use these credentials to access the Admin Panel:
-
-- **Email:** `Admin`
-- **Password:** `Admin`
+Because the app uses a relative base and an offline mock API, it renders identically locally and on Pages.
 
 ---
 
-## Deployment
+## Desktop App
 
-### Local Development
+The source in this repository is a headless, server-free web app, making it trivial to wrap as a desktop application (Electron, Tauri, Capacitor, etc.):
 
 ```bash
-npm run dev    # Starts Express + Vite dev server on port 3000
+# Example: build the static bundle, then point your desktop shell at dist/index.html
+npm run build
 ```
 
-### Production Build
+The desktop shell only needs to:
 
-```bash
-npm run build  # Builds frontend to dist/ and bundles server
-npm start      # Runs production server on port 3000
-```
+- Load `dist/index.html` in a full-screen WebView/BrowserWindow
+- Expose the document fullscreen API (already used by the in-app fullscreen button)
 
-### Paid Web Hosting (VPS / PaaS)
-
-For deployment on a paid web host (e.g., DigitalOcean, Railway, Render, or a VPS):
-
-1. **Build the project** on the server: `npm run build`
-2. **Set environment variables** (`GEMINI_API_KEY`, `APP_URL`)
-3. **Run with a process manager**: `pm2 start dist/server.cjs --name helper`
-4. **Point your domain** and enable HTTPS via Nginx/Caddy reverse proxy
-5. **Ensure Firestore access** — the Firebase Client SDK connects over HTTPS; no special firewall rules needed
-
-The production build is a single Node.js process (Express serving static files) that can run on any $5–$10/month VPS.
+No server or network is required — the demo-mode API keeps every feature working offline.
 
 ---
 
-## Firestore Collections
+## Tech Stack
 
-| Collection | Description |
-|------------|-------------|
-| `users` | User profiles (uid, email, role, displayName) |
-| `videos` | YouTube video catalog |
-| `playlists` | Shareable video playlists |
-| `notes` | Timestamp-linked study notes |
-| `resources` | Attached files and links |
-| `comments` | Discussion comments per video |
-| `activities` | Real-time activity audit log |
-| `diaries` | Personal study diaries & public wikis |
-| `community_posts` | Community discussion threads |
-| `settings` | Global system configuration |
+| Layer | Technology |
+|-------|-----------|
+| **Language** | TypeScript |
+| **Frontend** | React 19, Vite 6 |
+| **Styling** | Tailwind CSS 4, Framer Motion (`motion`) |
+| **Icons** | lucide-react |
+| **Video Player** | YouTube IFrame API |
+| **Typography** | Thmanyah typeface (Arabic), Inter (English) |
+
+The repository is fully headless and server-free: there is no backend, no database, and no environment variables required to build or run it.
 
 ---
 
-## HummingBird V1.0
+## Scripts
 
-**HummingBird V1.0** is a standalone interactive learning workspace built as a self-contained product within Helper. It provides a full-viewport, immersive study environment with no authentication required.
-
-### Features
-
-- **YouTube Video Player** — Load any YouTube video with integrated playback controls and timeline
-- **AI Academic Tutor** — Ask questions about the current lecture and get context-aware answers
-- **Timestamp-Linked Annotations** — Add notes, highlights, and questions at specific video timestamps
-- **Interactive Notepad** — Rich text notepad with automatic timestamp linking
-- **Multiple Notebooks** — Create and manage separate study notebooks per video
-- **Linked Resources** — Attach PDFs, links, images, and files to specific timestamps
-- **System Wikis** — Browse and search public study wikis published by the community
-- **AI Summary Generation** — Generate concise AI-powered summaries of video lectures
-- **Fullscreen Mode** — Immersive fullscreen workspace for focused studying
-- **Bilingual Support** — Full English and Arabic with RTL layout
-
-### Demo
-
-🔗 [HummingBird V1.0 Live Demo](https://hyperxhelper.github.io/Helper-V1.0/Product)
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the Vite dev server (demo mode) |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` / `npm start` | Preview the production build |
+| `npm run lint` | Type-check with `tsc --noEmit` |
 
 ---
 

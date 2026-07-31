@@ -1,6 +1,6 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
-import App from './App.tsx';
+import Product from './product.tsx';
 import './index.css';
 
 async function bootstrap() {
@@ -15,7 +15,7 @@ async function bootstrap() {
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <App />
+      <Product />
     </StrictMode>,
   );
 }
