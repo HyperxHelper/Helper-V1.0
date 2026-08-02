@@ -47,8 +47,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import AdminPanel from "./components/AdminPanel";
-import HummingbirdWorkspace from "./components/HummingbirdWorkspace";
-import InteractiveNotebook from "./components/InteractiveNotebook";
 
 const Product = React.lazy(() => import("./product"));
 
@@ -360,7 +358,6 @@ export default function App() {
   const [lang, setLang] = useState<"en" | "ar">("en");
   const [isRtl, setIsRtl] = useState(false);
   const [currentView, setCurrentView] = useState<"landing" | "helper" | "hummingbird">("landing");
-  const [isUseHelperDropdownOpen, setIsUseHelperDropdownOpen] = useState(false);
   useEffect(() => {
     setIsRtl(lang === "ar");
   }, [lang]);
@@ -490,139 +487,6 @@ export default function App() {
   const [aiAnswer, setAiAnswer] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiHistory, setAiHistory] = useState<{ query: string; answer: string }[]>([]);
-
-  // Recent Wikis and Community Hub States
-  const [helperSubView, setHelperSubView] = useState<"workspace" | "recent_wikis" | "hummingbird">("workspace");
-  const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
-  const [wikiTab, setWikiTab] = useState<"catalog" | "community">("catalog");
-  const [communityPosts, setCommunityPosts] = useState<any[]>([]);
-  const [isLoadingCommunity, setIsLoadingCommunity] = useState(false);
-  const [communityTopicFilter, setCommunityTopicFilter] = useState("All");
-  const [wikiCategoryFilter, setWikiCategoryFilter] = useState("All");
-
-  // New discussion modal state
-  const [isNewDiscussionOpen, setIsNewDiscussionOpen] = useState(false);
-  const [newDiscSubject, setNewDiscSubject] = useState("");
-  const [newDiscTopic, setNewDiscTopic] = useState("Physics");
-  const [newDiscVideoId, setNewDiscVideoId] = useState("");
-  const [newDiscContent, setNewDiscContent] = useState("");
-  const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
-
-  const fetchCommunityPosts = async () => {
-    setIsLoadingCommunity(true);
-    try {
-      const res = await fetch("/api/community-posts");
-      if (res.ok) {
-        const data = await res.json();
-        setCommunityPosts(data);
-      }
-    } catch (e) {
-      console.error("Failed to fetch community posts:", e);
-    } finally {
-      setIsLoadingCommunity(false);
-    }
-  };
-
-  const handleVotePost = async (postId: string) => {
-    if (!user) {
-      showToast(lang === "ar" ? "يرجى تسجيل الدخول أولاً للتصويت والمشاركة." : "Please login first to vote and interact.", "info");
-      return;
-    }
-    try {
-      const res = await fetch(`/api/community-posts/${postId}/vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.uid })
-      });
-      if (res.ok) {
-        const updatedPost = await res.json();
-        setCommunityPosts(prev => prev.map(p => p.id === postId ? updatedPost : p));
-        showToast(lang === "ar" ? "تم تحديث تصويتك بنجاح!" : "Vote updated successfully!", "success");
-      }
-    } catch (e) {
-      console.error("Error voting post:", e);
-    }
-  };
-
-  const handleAddResponse = async (postId: string) => {
-    if (!user) {
-      showToast(lang === "ar" ? "يرجى تسجيل الدخول للرد." : "Please login to reply.", "info");
-      return;
-    }
-    const text = replyTexts[postId]?.trim();
-    if (!text) return;
-
-    try {
-      const res = await fetch(`/api/community-posts/${postId}/responses`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.uid,
-          userDisplayName: user.displayName,
-          text
-        })
-      });
-      if (res.ok) {
-        const updatedPost = await res.json();
-        setCommunityPosts(prev => prev.map(p => p.id === postId ? updatedPost : p));
-        setReplyTexts(prev => ({ ...prev, [postId]: "" }));
-        showToast(lang === "ar" ? "تمت إضافة ردك بنجاح!" : "Reply added successfully!", "success");
-      }
-    } catch (e) {
-      console.error("Error adding reply:", e);
-    }
-  };
-
-  const handleCreateCommunityPost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      showToast(lang === "ar" ? "يرجى تسجيل الدخول لطرح نقاش." : "Please login to start a discussion.", "info");
-      return;
-    }
-    if (!newDiscSubject.trim() || !newDiscContent.trim()) {
-      showToast(lang === "ar" ? "يرجى تعبئة جميع الحقول المطلوبة." : "Please fill in all fields.", "error");
-      return;
-    }
-
-    const selectedVideo = catalogVideos.find(v => v.id === newDiscVideoId) || videos.find(v => v.id === newDiscVideoId);
-    const videoTitle = selectedVideo ? selectedVideo.title : "General Topic Discussion";
-    const videoUrl = newDiscVideoId ? `https://youtube.com/watch?v=${newDiscVideoId}` : "";
-
-    try {
-      const res = await fetch("/api/community-posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          videoId: newDiscVideoId,
-          videoTitle,
-          videoUrl,
-          topic: newDiscTopic,
-          subject: newDiscSubject,
-          content: newDiscContent,
-          userId: user.uid,
-          userDisplayName: user.displayName
-        })
-      });
-
-      if (res.ok) {
-        const newPost = await res.json();
-        setCommunityPosts(prev => [newPost, ...prev]);
-        setIsNewDiscussionOpen(false);
-        setNewDiscSubject("");
-        setNewDiscContent("");
-        setNewDiscVideoId("");
-        showToast(lang === "ar" ? "تم طرح نقاشك بنجاح في مجتمع هيلبر!" : "Your discussion has been published successfully!", "success");
-      }
-    } catch (e) {
-      console.error("Error creating community post:", e);
-    }
-  };
-
-  useEffect(() => {
-    if (currentView === "helper" && helperSubView === "recent_wikis" && wikiTab === "community") {
-      fetchCommunityPosts();
-    }
-  }, [currentView, helperSubView, wikiTab]);
 
   // Mobile drawer
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -954,7 +818,7 @@ export default function App() {
       const found = videos.find(v => v.id === urlVideoId);
       if (found) {
         setActiveVideo(found);
-        setCurrentView("helper");
+        setProductMode(true);
       } else {
         // Auto-import YouTube video if not yet registered in database!
         const importVideoOnFly = async () => {
@@ -972,7 +836,7 @@ export default function App() {
               const newVid = await res.json();
               setVideos(prev => [newVid, ...prev]);
               setActiveVideo(newVid);
-              setCurrentView("helper");
+              setProductMode(true);
               showToast(
                 lang === "ar"
                   ? `تم استيراد الدرس المشارك تلقائياً!`
@@ -1008,7 +872,7 @@ export default function App() {
                 const foundVideo = list.find((v: any) => v.id === data.videoId);
                 if (foundVideo) {
                   setActiveVideo(foundVideo);
-                  setCurrentView("helper");
+                  setProductMode(true);
                 }
               }
             }
@@ -1197,7 +1061,7 @@ export default function App() {
         );
         setIsAuthModalOpen(false);
         setAuthPassword("");
-        setCurrentView("helper");
+        setProductMode(true);
       } else {
         const err = await response.json();
         showToast(err.error || "Authentication failed", "error");
@@ -1226,7 +1090,7 @@ export default function App() {
         localStorage.setItem("helper_user", JSON.stringify(guestUser));
         setIsAuthModalOpen(false);
         setAuthPassword("");
-        setCurrentView("helper");
+        setProductMode(true);
       }
     }
   };
@@ -1298,7 +1162,7 @@ export default function App() {
     return () => {
       stopPollingProgress();
     };
-  }, [activeVideo, helperSubView]);
+  }, [activeVideo]);
 
   const startPollingProgress = () => {
     stopPollingProgress();
@@ -1736,65 +1600,16 @@ export default function App() {
             </button>
             <div className="relative">
               <button 
-                onClick={() => setIsUseHelperDropdownOpen(!isUseHelperDropdownOpen)}
+                onClick={() => { setProductMode(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 className={`text-xs font-extrabold px-4 py-2 rounded-full transition flex items-center gap-1.5 ${
-                  currentView === "helper" || currentView === "hummingbird"
+                  productMode
                     ? "bg-[#c45a3a] text-white shadow-md scale-105" 
                     : "bg-[#c45a3a]/10 text-[#c45a3a] hover:bg-[#c45a3a]/25"
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                {lang === "ar" ? "استخدام هيلبر ▾" : "Use Helper ▾"}
+                {lang === "ar" ? "استخدام هيلبر" : "Use Helper"}
               </button>
-              {isUseHelperDropdownOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsUseHelperDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-start">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsUseHelperDropdownOpen(false);
-                        if (user) {
-                          setCurrentView("helper");
-                        } else {
-                          setIsRegisterMode(false);
-                          setIsAuthModalOpen(true);
-                          showToast(lang === "ar" ? "يرجى تسجيل الدخول للوصول إلى مساحة عمل هيلبر" : "Please log in first to use the Helper workspace", "info");
-                        }
-                      }}
-                      className={`w-full text-start px-4 py-3 text-xs font-black transition flex items-center gap-2.5 ${
-                        currentView === "helper"
-                          ? "bg-[#c45a3a]/10 text-[#c45a3a]"
-                          : "hover:bg-gray-100 text-[#5c554d]"
-                      }`}
-                    >
-                      <span>📓</span>
-                      {lang === "ar" ? "دفتر الملاحظات التفاعلي" : "Interactive Notebook"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsUseHelperDropdownOpen(false);
-                        if (user) {
-                          setCurrentView("hummingbird");
-                        } else {
-                          setIsRegisterMode(false);
-                          setIsAuthModalOpen(true);
-                          showToast(lang === "ar" ? "يرجى تسجيل الدخول للوصول إلى مساحة عمل طنان هيلبر" : "Please log in first to use the Project Hummingbird workspace", "info");
-                        }
-                      }}
-                      className={`w-full text-start px-4 py-3 text-xs font-black transition flex items-center gap-2.5 ${
-                        currentView === "hummingbird"
-                          ? "bg-[#c45a3a]/10 text-[#c45a3a]"
-                          : "hover:bg-gray-100 text-[#5c554d]"
-                      }`}
-                    >
-                      <span>🛸</span>
-                      {lang === "ar" ? "مشروع طنان هيلبر (Project Hummingbird)" : "Project Hummingbird"}
-                    </button>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -1920,32 +1735,13 @@ export default function App() {
                     <button 
                       onClick={() => { 
                         setIsDrawerOpen(false); 
-                        if (user) {
-                          setCurrentView("helper");
-                        } else {
-                          setIsRegisterMode(false);
-                          setIsAuthModalOpen(true);
-                        }
+                        setProductMode(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }} 
                       className="text-start py-3 px-4 hover:bg-[#faf8f5] text-[#1a1612] rounded-xl text-sm font-black flex items-center gap-2"
                     >
-                      <span>📓</span>
-                      {lang === "ar" ? "دفتر الملاحظات التفاعلي" : "Interactive Notebook"}
-                    </button>
-                    <button 
-                      onClick={() => { 
-                        setIsDrawerOpen(false); 
-                        if (user) {
-                          setCurrentView("hummingbird");
-                        } else {
-                          setIsRegisterMode(false);
-                          setIsAuthModalOpen(true);
-                        }
-                      }} 
-                      className="text-start py-3 px-4 hover:bg-[#faf8f5] text-[#1a1612] rounded-xl text-sm font-black flex items-center gap-2"
-                    >
-                      <span>🛸</span>
-                      {lang === "ar" ? "مشروع طنان هيلبر (Project Hummingbird)" : "Project Hummingbird"}
+                      <Sparkles className="w-4 h-4 text-[#c45a3a]" />
+                      {lang === "ar" ? "استخدام هيلبر" : "Use Helper"}
                     </button>
                   </div>
                 </div>
@@ -1976,787 +1772,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {currentView === "hummingbird" ? (
-        /* USE HELPER STANDALONE VIEW */
-        user ? (
-          <div className="pt-28 pb-20 px-4 max-w-7xl mx-auto min-h-[85vh]">
-            {/* Elegant Header with Back Button and Info */}
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-              <button 
-                onClick={() => setCurrentView("landing")}
-                className="flex items-center gap-2 text-xs font-bold text-[#8a8278] hover:text-[#c45a3a] bg-[#f5f0ea] hover:bg-[#e8e2d9] px-4 py-2.5 rounded-full transition-all shadow-sm"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {lang === "ar" ? "العودة للرئيسية" : "Back to Home"}
-              </button>
-
-              <div className="text-end">
-                <span className="text-[10px] bg-[#c45a3a]/10 text-[#c45a3a] px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                  {lang === "ar" ? "مشروع طنان هيلبر النشط" : "Active Project Hummingbird Workspace"}
-                </span>
-                <h2 className="text-xl font-black text-[#1a1612] mt-1">
-                  {lang === "ar" ? "مشروع طنان هيلبر" : "Project Hummingbird"}
-                </h2>
-              </div>
-            </div>
-
-            <HummingbirdWorkspace 
-              user={user}
-              lang={lang}
-              onBackToHome={() => setCurrentView("landing")}
-              catalogVideos={catalogVideos}
-            />
-          </div>
-        ) : (
-          /* GUEST MEMBER LOCK SCREEN */
-          <div className="pt-28 pb-20 px-4 max-w-md mx-auto min-h-[80vh] flex items-center justify-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-md w-full bg-white border border-[#e8e2d9] rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden"
-            >
-              {/* Top colored accent line */}
-              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#c45a3a] to-[#e07a5f]" />
-              
-              <div className="w-16 h-16 bg-[#c45a3a]/10 text-[#c45a3a] rounded-full flex items-center justify-center mx-auto mb-6">
-                <Lock className="w-8 h-8" />
-              </div>
-
-              <h3 className="text-2xl font-black text-[#1a1612] mb-3">
-                {lang === "ar" ? "منطقة الأعضاء فقط" : "Members Only Area"}
-              </h3>
-              
-              <p className="text-sm text-[#5c554d] mb-8 leading-relaxed">
-                {lang === "ar" 
-                  ? "استخدام خدمة هيلبر يتطلب تسجيل الدخول أو إنشاء حساب كطالب أو معلم لمزامنة ملاحظاتك وحفظ ملفاتك السحابية تلقائياً."
-                  : "Accessing the full interactive workspace requires logging in or registering. Save your notes, manage playlists, and sync with the cloud!"
-                }
-              </p>
-
-              <div className="flex flex-col gap-3">
-                <button 
-                  onClick={() => { setIsRegisterMode(false); setIsAuthModalOpen(true); }}
-                  className="w-full py-4 bg-[#c45a3a] hover:scale-[1.01] transition-all text-white font-bold text-sm rounded-2xl shadow-lg shadow-[#c45a3a]/15"
-                >
-                  {lang === "ar" ? "تسجيل الدخول" : "Login to Helper"}
-                </button>
-                <button 
-                  onClick={() => { setIsRegisterMode(true); setIsAuthModalOpen(true); }}
-                  className="w-full py-4 bg-[#f5f0ea] hover:bg-[#e8e2d9] transition-all text-[#1a1612] font-bold text-sm rounded-2xl"
-                >
-                  {lang === "ar" ? "إنشاء حساب مجاني" : "Create Free Account"}
-                </button>
-                <button 
-                  onClick={() => setCurrentView("landing")}
-                  className="w-full py-3 text-xs text-[#8a8278] hover:text-[#c45a3a] font-bold transition-all flex items-center justify-center gap-1 mt-2"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  {lang === "ar" ? "العودة للرئيسية" : "Back to Home"}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )
-      ) : currentView === "helper" ? (
-        /* USE HELPER STANDALONE VIEW */
-        user ? (
-          <div className="pt-28 pb-20 px-4 max-w-7xl mx-auto min-h-[85vh]">
-            {/* Elegant Header with Back Button and Info */}
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-              <button 
-                onClick={() => setCurrentView("landing")}
-                className="flex items-center gap-2 text-xs font-bold text-[#8a8278] hover:text-[#c45a3a] bg-[#f5f0ea] hover:bg-[#e8e2d9] px-4 py-2.5 rounded-full transition-all shadow-sm"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {lang === "ar" ? "العودة للرئيسية" : "Back to Home"}
-              </button>
-
-              <div className="text-end">
-                <span className="text-[10px] bg-[#5a8a6e]/10 text-[#5a8a6e] px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                  {lang === "ar" ? "مساحة العمل النشطة" : "Active Member Workspace"}
-                </span>
-                <h2 className="text-xl font-black text-[#1a1612] mt-1">
-                  {lang === "ar" ? "مرحبًا بك في هيلبر" : "Use Helper Notebook"}
-                </h2>
-              </div>
-            </div>
-
-            {/* Helper Workspace Tab Bar */}
-            <div className="flex bg-[#f5f0ea] border border-[#e8e2d9] p-1.5 rounded-2xl mb-8 max-w-2xl shadow-sm relative">
-              <button
-                onClick={() => {
-                  setHelperSubView("workspace");
-                  setIsWorkspaceDropdownOpen(false);
-                }}
-                className={`flex-1 py-2 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
-                  helperSubView === "workspace"
-                    ? "bg-[#c45a3a] text-white shadow-md scale-[1.02]"
-                    : "text-[#5c554d] hover:text-[#c45a3a]"
-                }`}
-              >
-                <span className="text-base">💻</span>
-                {lang === "ar" ? "مساحة العمل والتدوين" : "Interactive Notebook"}
-              </button>
-              <button
-                onClick={() => {
-                  setHelperSubView("recent_wikis");
-                  setIsWorkspaceDropdownOpen(false);
-                }}
-                className={`flex-1 py-2 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
-                  helperSubView === "recent_wikis"
-                    ? "bg-[#c45a3a] text-white shadow-md scale-[1.02]"
-                    : "text-[#5c554d] hover:text-[#c45a3a]"
-                }`}
-              >
-                <span className="text-base">📚</span>
-                {lang === "ar" ? "الويكي الحديثة والمجتمع" : "Recent Wikis & Community"}
-              </button>
-              <div className="flex-1 relative">
-                <button
-                  type="button"
-                  onClick={() => setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen)}
-                  className={`w-full py-2 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
-                    helperSubView === "hummingbird"
-                      ? "bg-[#c45a3a] text-white shadow-md scale-[1.02]"
-                      : "text-[#5c554d] hover:text-[#c45a3a]"
-                  }`}
-                >
-                  <span className="text-base">🛸</span>
-                  {lang === "ar" ? "المزيد ▾" : "More ▾"}
-                </button>
-                {isWorkspaceDropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsWorkspaceDropdownOpen(false)} />
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-[#fcfbf9] border border-[#e8e2d9] rounded-2xl shadow-xl z-50 overflow-hidden py-1.5 text-left rtl:text-right">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setHelperSubView("hummingbird");
-                          setIsWorkspaceDropdownOpen(false);
-                        }}
-                        className={`w-full text-start px-4 py-3 text-xs font-black transition flex items-center gap-2.5 ${
-                          helperSubView === "hummingbird"
-                            ? "bg-[#c45a3a]/10 text-[#c45a3a]"
-                            : "hover:bg-gray-100 text-[#5c554d]"
-                        }`}
-                      >
-                        <span className="text-base">🛸</span>
-                        {lang === "ar" ? "طنان هيلبر v1.1" : "Hummingbird Workspace (v1.1)"}
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {helperSubView === "workspace" && (
-              <InteractiveNotebook
-                lang={lang}
-                activeVideo={activeVideo}
-                setActiveVideo={setActiveVideo}
-                isAddVideoOpen={isAddVideoOpen}
-                setIsAddVideoOpen={setIsAddVideoOpen}
-                translateAllNotes={translateAllNotes}
-                playlistSidebarView={playlistSidebarView}
-                setPlaylistSidebarView={setPlaylistSidebarView}
-                activePlaylist={activePlaylist}
-                setActivePlaylist={setActivePlaylist}
-                videos={videos}
-                playlists={playlists}
-                showToast={showToast}
-                user={user}
-                handleDeleteVideo={handleDeleteVideo}
-                setIsCreatePlaylistOpen={setIsCreatePlaylistOpen}
-                handleResetStudySession={handleResetStudySession}
-                playerCurrentTime={playerCurrentTime}
-                isPlaying={isPlaying}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                newNoteText={newNoteText}
-                setNewNoteText={setNewNoteText}
-                newCommentText={newCommentText}
-                setNewCommentText={setNewCommentText}
-                handleAddNote={handleAddNote}
-                handleDeleteNote={handleDeleteNote}
-                isDraftingNote={isDraftingNote}
-                handleDraftNoteWithAI={handleDraftNoteWithAI}
-                attachedFileName={attachedFileName}
-                setAttachedFileName={setAttachedFileName}
-                attachedFileSize={attachedFileSize}
-                setAttachedFileSize={setAttachedFileSize}
-                notes={notes}
-                diaries={diaries}
-                diaryTitle={diaryTitle}
-                setDiaryTitle={setDiaryTitle}
-                diaryContent={diaryContent}
-                setDiaryContent={setDiaryContent}
-                activeDiaryId={activeDiaryId}
-                setActiveDiaryId={setActiveDiaryId}
-                isDiaryPublicWiki={isDiaryPublicWiki}
-                setIsDiaryPublicWiki={setIsDiaryPublicWiki}
-                diarySubTab={diarySubTab}
-                setDiarySubTab={setDiarySubTab}
-                isDiarySaving={isDiarySaving}
-                handleDeleteDiary={handleDeleteDiary}
-                handleSaveDiary={handleSaveDiary}
-                handleShareDiary={handleShareDiary}
-                handleTogglePinNote={handleTogglePinNote}
-                wikis={wikis}
-                transcript={transcript}
-                seekTo={seekTo}
-                resources={resources}
-                resTitle={resTitle}
-                setResTitle={setResTitle}
-                resType={resType}
-                setResType={setResType}
-                resUrl={resUrl}
-                setResUrl={setResUrl}
-                handleAddResource={handleAddResource}
-                isAddResourceOpen={isAddResourceOpen}
-                setIsAddResourceOpen={setIsAddResourceOpen}
-                handleAttachFile={handleAttachFile}
-                comments={comments}
-                handleAddComment={handleAddComment}
-                aiAnswer={aiAnswer}
-                aiPrompt={aiPrompt}
-                setAiPrompt={setAiPrompt}
-                handleAskAI={handleAskAI}
-                isAiLoading={isAiLoading}
-                formatTime={formatTime}
-              />
-            )}
-
-            {helperSubView === "recent_wikis" && (
-              /* RECENT PUBLIC WIKIS & COMMUNITY HUB PAGE */
-              <div className="bg-white border border-[#e8e2d9] rounded-3xl p-6 md:p-8 shadow-2xl min-h-[640px]">
-                {/* Header inside the page */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#e8e2d9] pb-6 mb-8">
-                  <div>
-                    <h3 className="text-xl font-black text-[#1a1612]">
-                      {lang === "ar" ? "مستودع الويكي والمنتدى الأكاديمي" : "Recent Wikis & Community Hub"}
-                    </h3>
-                    <p className="text-xs text-[#8a8278] mt-1">
-                      {lang === "ar"
-                        ? "تصفح ملخصات الويكي المعتمدة وشارك في نقاشات مجتمع هيلبر التفاعلية"
-                        : "Browse certified wikis and collaborate in active pre-production Wikipedia-style discussions."}
-                    </p>
-                  </div>
-
-                  {/* Tabs for Catalog vs Community */}
-                  <div className="flex bg-[#f5f0ea] p-1 rounded-xl border border-[#e8e2d9] shrink-0 self-start">
-                    <button
-                      onClick={() => setWikiTab("catalog")}
-                      className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-                        wikiTab === "catalog"
-                          ? "bg-white text-[#1a1612] shadow-sm"
-                          : "text-[#8a8278] hover:text-[#1a1612]"
-                      }`}
-                    >
-                      <span>📚</span>
-                      {lang === "ar" ? "الويكي الحديثة" : "Recent Wikis"}
-                    </button>
-                    <button
-                      onClick={() => setWikiTab("community")}
-                      className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 relative ${
-                        wikiTab === "community"
-                          ? "bg-white text-[#1a1612] shadow-sm"
-                          : "text-[#8a8278] hover:text-[#1a1612]"
-                      }`}
-                    >
-                      <span>💬</span>
-                      {lang === "ar" ? "منتدى المجتمع" : "Community Hub"}
-                      {communityPosts.length > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-[#c45a3a] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
-                          {communityPosts.length}
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* TAB 1: RECENT WIKIS CATALOG */}
-                {wikiTab === "catalog" && (
-                  <div>
-                    {/* Categories Filter bar */}
-                    <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-thin">
-                      {["All", "Physics", "Mathematics", "Biology", "Chemistry", "Computer Science"].map((cat) => (
-                        <button
-                          key={cat}
-                          onClick={() => setWikiCategoryFilter(cat)}
-                          className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
-                            wikiCategoryFilter === cat
-                              ? "bg-[#1a1612] text-white"
-                              : "bg-[#f5f0ea] text-[#5c554d] hover:bg-[#e8e2d9]"
-                          }`}
-                        >
-                          {cat === "All" ? (lang === "ar" ? "الكل" : "All") : cat}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Intellectual Property Disclaimer */}
-                    <div className="p-4 bg-amber-50/70 border border-amber-200/60 rounded-2xl mb-8 flex items-start gap-3">
-                      <span className="text-xl shrink-0">⚠️</span>
-                      <div>
-                        <h4 className="font-extrabold text-xs text-amber-900">
-                          {lang === "ar" ? "حقوق النشر والعلامة التجارية (HyperHelper™)" : "Trademark & Intellectual Property (HyperHelper™)"}
-                        </h4>
-                        <p className="text-[11px] text-amber-800 leading-relaxed mt-0.5">
-                          {lang === "ar"
-                            ? "جميع المحاضرات ومقاطع الفيديو التعليمية تابعة لأصحابها الأصليين ومتاحة مجاناً للجميع. ولكن ملاحظات الويكي المنظمة والملخصات المعتمدة ودفاتر التدوين التزامنية التي تشاهدها هنا تحمل العلامة التجارية وحقوق النشر محفوظة لـ Helper و HyperHelper™ (المنتج الفاخر لـ Helper). يمنع إعادة إنتاجها دون إذن."
-                            : "Standard YouTube lectures belong to their respective creators and are free for academic use. However, the curated interactive wikis, structured notation, and validated notepad study bundles are copyrighted and trademarked under Helper and HyperHelper™ (Helper's premier top-notch service)."}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Thumbnail Grid - Scrolling Tens of thumbnails */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {catalogVideos
-                        .filter((v) => wikiCategoryFilter === "All" || v.category === wikiCategoryFilter)
-                        .map((video) => (
-                          <div
-                            key={video.id}
-                            className="group bg-white border border-[#e8e2d9] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-                          >
-                            {/* Watermarked Video Thumbnail */}
-                            <div className="relative aspect-video w-full bg-black overflow-hidden">
-                              <img
-                                src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
-                                alt={video.title}
-                                referrerPolicy="no-referrer"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
-                              />
-
-                              {/* Watermark Diagonal overlay */}
-                              <div className="absolute inset-0 bg-black/15 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-                                <div className="text-[12px] font-black tracking-widest text-white/20 uppercase rotate-12 bg-black/35 py-1 px-4 rounded-md border border-white/5 whitespace-nowrap">
-                                  HyperHelper™ Watermark
-                                </div>
-                              </div>
-
-                              {/* Rights Badge */}
-                              <span className="absolute top-3 left-3 bg-[#c45a3a] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-md flex items-center gap-1 border border-white/10">
-                                <Sparkles className="w-2.5 h-2.5 text-yellow-300 animate-pulse" />
-                                HyperHelper™ Premium Wiki
-                              </span>
-
-                              {/* Video duration badge */}
-                              <span className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] font-mono px-1.5 py-0.5 rounded">
-                                {formatTime(video.duration)}
-                              </span>
-                            </div>
-
-                            {/* Info */}
-                            <div className="p-4 flex-1 flex flex-col justify-between gap-4">
-                              <div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5a8a6e] bg-[#5a8a6e]/10 px-2 py-0.5 rounded-full">
-                                  {video.category}
-                                </span>
-                                <h4 className="font-black text-sm text-[#1a1612] mt-2 group-hover:text-[#c45a3a] transition-colors line-clamp-2">
-                                  {video.title}
-                                </h4>
-                                <p className="text-[11px] text-[#8a8278] mt-1 flex items-center gap-1">
-                                  <span>👤</span> {video.channelTitle}
-                                </p>
-                              </div>
-
-                              {/* Interactive Launcher buttons */}
-                              <div className="pt-2 border-t border-[#f5f0ea] flex items-center gap-2">
-                                <button
-                                  onClick={() => {
-                                    setActiveVideo(video);
-                                    setHelperSubView("workspace");
-                                    setActiveTab("notes");
-                                    showToast(
-                                      lang === "ar"
-                                        ? `تم تحميل الدرس والمفكرة: ${video.title}`
-                                        : `Loaded study lecture and notepad: ${video.title}`,
-                                      "success"
-                                    );
-                                  }}
-                                  className="flex-1 py-2 bg-[#5a8a6e] hover:bg-[#5a8a6e]/90 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm"
-                                >
-                                  <span>📝</span>
-                                  {lang === "ar" ? "دراسة الملاحظات" : "Study Notes"}
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setActiveVideo(video);
-                                    setHelperSubView("workspace");
-                                    setActiveTab("diary");
-                                    setDiarySubTab("wikis");
-                                    showToast(
-                                      lang === "ar"
-                                        ? `تم فتح دليل ويكي هيلبر للدرس: ${video.title}`
-                                        : `Opened wiki guide for lesson: ${video.title}`,
-                                      "success"
-                                    );
-                                  }}
-                                  className="flex-1 py-2 bg-[#1a1612] hover:bg-[#332e29] text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm"
-                                >
-                                  <span>📖</span>
-                                  {lang === "ar" ? "الويكي التفاعلي" : "Standard Wiki"}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 2: COMMUNITY DISCUSSION HUB */}
-                {wikiTab === "community" && (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left 8 columns: Discussions list */}
-                    <div className="lg:col-span-8 flex flex-col gap-6">
-                      
-                      {/* Topic filter bar */}
-                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                        {["All", "Physics", "Mathematics", "Biology", "Chemistry", "Computer Science"].map((topic) => (
-                          <button
-                            key={topic}
-                            onClick={() => setCommunityTopicFilter(topic)}
-                            className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition ${
-                              communityTopicFilter === topic
-                                ? "bg-[#c45a3a] text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                          >
-                            {topic === "All" ? (lang === "ar" ? "الكل" : "All") : topic}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Posts Feed */}
-                      {isLoadingCommunity ? (
-                        <div className="text-center py-16">
-                          <span className="w-8 h-8 rounded-full border-4 border-[#c45a3a] border-t-transparent inline-block animate-spin" />
-                          <p className="text-xs text-gray-500 mt-2 font-bold">
-                            {lang === "ar" ? "جاري تحميل نقاشات المجتمع..." : "Loading academic discussions..."}
-                          </p>
-                        </div>
-                      ) : communityPosts.length === 0 ? (
-                        <div className="text-center py-16 bg-gray-50 border border-dashed rounded-3xl">
-                          <span className="text-3xl">💬</span>
-                          <p className="text-xs text-gray-500 mt-3 font-bold">
-                            {lang === "ar" ? "لا توجد نقاشات منشورة بعد في هذا القسم. كن أول من يطرح نقاشاً!" : "No active discussions found for this topic. Be the first to start a thread!"}
-                          </p>
-                        </div>
-                      ) : (
-                        communityPosts
-                          .filter((p) => communityTopicFilter === "All" || p.topic === communityTopicFilter)
-                          .map((post) => (
-                            <div
-                              key={post.id}
-                              className="bg-white border border-[#e8e2d9] rounded-2xl p-5 shadow-sm hover:border-[#c45a3a]/40 transition-all flex flex-col gap-4"
-                            >
-                              {/* Post Author & Header */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#c45a3a] to-[#5a8a6e] text-white font-black text-xs flex items-center justify-center">
-                                    {post.userDisplayName?.substring(0, 2).toUpperCase() || "GL"}
-                                  </div>
-                                  <div>
-                                    <h5 className="font-extrabold text-xs text-[#1a1612]">
-                                      {post.userDisplayName || (lang === "ar" ? "باحث هيلبر" : "Helper Learner")}
-                                    </h5>
-                                    <span className="text-[10px] text-gray-400">
-                                      {new Date(post.createdAt).toLocaleDateString()} @ {new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-bold text-[#c45a3a] bg-[#c45a3a]/10 px-2 py-0.5 rounded-full">
-                                    {post.topic}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Subject and Content */}
-                              <div>
-                                <h4 className="font-black text-sm text-[#1a1612]">
-                                  {post.subject}
-                                </h4>
-                                <p className="text-xs text-[#5c554d] leading-relaxed mt-2 bg-gray-50/50 p-3 rounded-xl border border-gray-100 whitespace-pre-wrap">
-                                  {post.content}
-                                </p>
-                              </div>
-
-                              {/* YouTube Video Link Tag */}
-                              {post.videoId && (
-                                <div className="flex items-center gap-2 bg-[#f5f0ea] p-2.5 rounded-xl text-xs text-[#5c554d]">
-                                  <span className="text-base">🎥</span>
-                                  <div className="flex-1 min-w-0">
-                                    <span className="font-extrabold text-[10px] uppercase text-[#8a8278] block tracking-wider">
-                                      {lang === "ar" ? "مرجع الدرس التفاعلي" : "REFERENCED LECTURE"}
-                                    </span>
-                                    <span className="font-bold text-xs text-[#1a1612] truncate block">
-                                      {post.videoTitle || "YouTube Lesson"}
-                                    </span>
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      const matchedVideo = catalogVideos.find(v => v.id === post.videoId) || videos.find(v => v.id === post.videoId) || {
-                                        id: post.videoId,
-                                        title: post.videoTitle || "Lecture",
-                                        channelTitle: "YouTube Creator",
-                                        category: post.topic,
-                                        duration: 600,
-                                        addedBy: "system",
-                                        createdAt: new Date().toISOString()
-                                      };
-                                      setActiveVideo(matchedVideo as VideoDoc);
-                                      setHelperSubView("workspace");
-                                      showToast(
-                                        lang === "ar" ? `تم فتح الدرس المرجعي: ${matchedVideo.title}` : `Loaded reference lecture: ${matchedVideo.title}`,
-                                        "success"
-                                      );
-                                    }}
-                                    className="px-2.5 py-1 bg-white hover:bg-gray-100 text-[#1a1612] border border-[#e8e2d9] rounded-lg text-[10px] font-bold transition flex items-center gap-1 whitespace-nowrap shrink-0"
-                                  >
-                                    <ExternalLink className="w-3 h-3" />
-                                    {lang === "ar" ? "دراسة الدرس" : "Study Now"}
-                                  </button>
-                                </div>
-                              )}
-
-                              {/* Interactions (Upvote & Reply Count) */}
-                              <div className="flex items-center gap-4 pt-2 border-t border-[#f5f0ea]">
-                                <button
-                                  onClick={() => handleVotePost(post.id)}
-                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                                    post.votedUsers?.includes(user?.uid)
-                                      ? "bg-[#c45a3a] text-white"
-                                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                  }`}
-                                >
-                                  <ThumbsUp className="w-3.5 h-3.5" />
-                                  <span>{post.votes || 0}</span>
-                                </button>
-
-                                <span className="text-xs text-gray-500 font-bold flex items-center gap-1">
-                                  <MessageSquare className="w-3.5 h-3.5" />
-                                  {post.responses?.length || 0} {lang === "ar" ? "ردود" : "replies"}
-                                </span>
-                              </div>
-
-                              {/* Responses Section */}
-                              {post.responses && post.responses.length > 0 && (
-                                <div className="bg-[#fffdf9] border border-[#e8e2d9] rounded-xl p-4 flex flex-col gap-3">
-                                  <span className="text-[9px] font-black tracking-widest text-[#8a8278] uppercase">
-                                    {lang === "ar" ? "الردود الأكاديمية والحلول المقترحة" : "ACADEMIC RESPONSES & SOLUTIONS"}
-                                  </span>
-
-                                  {post.responses.map((resp: any, i: number) => (
-                                    <div key={i} className="flex gap-2.5 items-start bg-white p-3 rounded-lg border border-gray-100">
-                                      <div className="w-7 h-7 rounded-full bg-[#5a8a6e]/15 text-[#5a8a6e] font-black text-[10px] flex items-center justify-center shrink-0">
-                                        {resp.userDisplayName?.substring(0, 2).toUpperCase() || "HE"}
-                                      </div>
-                                      <div className="flex-1">
-                                        <div className="flex items-center justify-between">
-                                          <span className="font-extrabold text-[11px] text-[#1a1612]">
-                                            {resp.userDisplayName}
-                                          </span>
-                                          <span className="text-[8px] text-gray-400">
-                                            {new Date(resp.createdAt).toLocaleDateString()}
-                                          </span>
-                                        </div>
-                                        <p className="text-xs text-[#5c554d] mt-1 whitespace-pre-wrap">
-                                          {resp.text}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* Write a response form */}
-                              <div className="flex gap-2 items-center">
-                                <input
-                                  type="text"
-                                  placeholder={lang === "ar" ? "أضف ردك أو حلك الأكاديمي المقترح..." : "Add your academic response..."}
-                                  value={replyTexts[post.id] || ""}
-                                  onChange={(e) => setReplyTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
-                                  className="flex-1 bg-gray-50 hover:bg-gray-100 focus:bg-white border focus:border-[#c45a3a] px-3 py-2 text-xs rounded-xl outline-none transition"
-                                />
-                                <button
-                                  onClick={() => handleAddResponse(post.id)}
-                                  className="px-4 py-2 bg-[#c45a3a] hover:bg-[#c45a3a]/90 text-white font-bold text-xs rounded-xl transition"
-                                >
-                                  {lang === "ar" ? "رد" : "Reply"}
-                                </button>
-                              </div>
-
-                            </div>
-                          ))
-                      )}
-
-                    </div>
-
-                    {/* Right 4 columns: Draft Discussion Form */}
-                    <div className="lg:col-span-4">
-                      <div className="bg-[#f5f0ea]/50 border border-[#e8e2d9] rounded-2xl p-5 sticky top-24">
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="text-xl">✍️</span>
-                          <h4 className="font-black text-sm text-[#1a1612]">
-                            {lang === "ar" ? "طرح موضوع للنقاش" : "Draft New Discussion"}
-                          </h4>
-                        </div>
-
-                        <p className="text-xs text-[#5c554d] mb-4 leading-relaxed">
-                          {lang === "ar"
-                            ? "أطرح سؤالك أو موضوعك الدراسي لتبادل الحلول مع الزملاء. تأكد من ربط الدرس بالفيديو لتسهيل المتابعة!"
-                            : "Start a collaborative academic discussion. Anchor your post to a specific YouTube video lecture for quick reference!"}
-                        </p>
-
-                        <form onSubmit={handleCreateCommunityPost} className="flex flex-col gap-4">
-                          {/* Subject Input */}
-                          <div>
-                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-wider mb-1">
-                              {lang === "ar" ? "عنوان الموضوع" : "DISCUSSION SUBJECT"}
-                            </label>
-                            <input
-                              type="text"
-                              placeholder={lang === "ar" ? "مثال: إشكالية في حساب التفاضل والتكامل" : "e.g. Trouble with Special Relativity limit"}
-                              value={newDiscSubject}
-                              onChange={(e) => setNewDiscSubject(e.target.value)}
-                              className="w-full bg-white border border-[#e8e2d9] px-3.5 py-2 text-xs rounded-xl outline-none focus:border-[#c45a3a] transition"
-                              required
-                            />
-                          </div>
-
-                          {/* Academic Category */}
-                          <div>
-                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-wider mb-1">
-                              {lang === "ar" ? "التخصص العلمي" : "ACADEMIC TOPIC"}
-                            </label>
-                            <select
-                              value={newDiscTopic}
-                              onChange={(e) => setNewDiscTopic(e.target.value)}
-                              className="w-full bg-white border border-[#e8e2d9] px-3.5 py-2 text-xs rounded-xl outline-none focus:border-[#c45a3a] transition"
-                            >
-                              {["Physics", "Mathematics", "Biology", "Chemistry", "Computer Science"].map((topic) => (
-                                <option key={topic} value={topic}>{topic}</option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Reference Lecture Selection */}
-                          <div>
-                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-wider mb-1">
-                              {lang === "ar" ? "ربط الدرس المرجعي" : "REFERENCE YOUTUBE VIDEO"}
-                            </label>
-                            <select
-                              value={newDiscVideoId}
-                              onChange={(e) => setNewDiscVideoId(e.target.value)}
-                              className="w-full bg-white border border-[#e8e2d9] px-3.5 py-2 text-xs rounded-xl outline-none focus:border-[#c45a3a] transition font-medium"
-                            >
-                              <option value="">{lang === "ar" ? "-- اختر درساً مرجعياً --" : "-- Choose Lesson Reference --"}</option>
-                              {catalogVideos.map((v) => (
-                                <option key={v.id} value={v.id}>{v.title} ({v.category})</option>
-                              ))}
-                              {videos.map((v) => (
-                                <option key={v.id} value={v.id}>{v.title} (Added Video)</option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Detailed Discussion Content */}
-                          <div>
-                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-wider mb-1">
-                              {lang === "ar" ? "تفاصيل السؤال أو المشكلة" : "DISCUSSION DETAIL"}
-                            </label>
-                            <textarea
-                              rows={4}
-                              placeholder={lang === "ar" ? "اشرح بالتفصيل المسألة أو النظرية التي تود نقاشها وحلها..." : "Describe your study problem or request detail so classmates can assist..."}
-                              value={newDiscContent}
-                              onChange={(e) => setNewDiscContent(e.target.value)}
-                              className="w-full bg-white border border-[#e8e2d9] px-3.5 py-2 text-xs rounded-xl outline-none focus:border-[#c45a3a] transition font-medium"
-                              required
-                            />
-                          </div>
-
-                          {/* Submit button */}
-                          <button
-                            type="submit"
-                            className="w-full py-3 bg-[#c45a3a] hover:bg-[#c45a3a]/90 text-white font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5"
-                          >
-                            <span>🚀</span>
-                            {lang === "ar" ? "طرح النقاش الآن" : "Publish Discussion"}
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-
-                  </div>
-                )}
-
-              </div>
-            )}
-
-            {helperSubView === "hummingbird" && (
-              <HummingbirdWorkspace 
-                user={user}
-                lang={lang}
-                onBackToHome={() => setHelperSubView("workspace")}
-                catalogVideos={catalogVideos}
-              />
-            )}
-          </div>
-        ) : (
-          /* GUEST MEMBER LOCK SCREEN */
-          <div className="pt-28 pb-20 px-4 max-w-md mx-auto min-h-[80vh] flex items-center justify-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-md w-full bg-white border border-[#e8e2d9] rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden"
-            >
-              {/* Top colored accent line */}
-              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#c45a3a] to-[#e07a5f]" />
-              
-              <div className="w-16 h-16 bg-[#c45a3a]/10 text-[#c45a3a] rounded-full flex items-center justify-center mx-auto mb-6">
-                <Lock className="w-8 h-8" />
-              </div>
-
-              <h3 className="text-2xl font-black text-[#1a1612] mb-3">
-                {lang === "ar" ? "منطقة الأعضاء فقط" : "Members Only Area"}
-              </h3>
-              
-              <p className="text-sm text-[#5c554d] mb-8 leading-relaxed">
-                {lang === "ar" 
-                  ? "استخدام خدمة هيلبر يتطلب تسجيل الدخول أو إنشاء حساب كطالب أو معلم لمزامنة ملاحظاتك وحفظ ملفاتك السحابية تلقائياً."
-                  : "Accessing the full interactive workspace requires logging in or registering. Save your notes, manage playlists, and sync with the cloud!"
-                }
-              </p>
-
-              <div className="flex flex-col gap-3">
-                <button 
-                  onClick={() => { setIsRegisterMode(false); setIsAuthModalOpen(true); }}
-                  className="w-full py-4 bg-[#c45a3a] hover:scale-[1.01] transition-all text-white font-bold text-sm rounded-2xl shadow-lg shadow-[#c45a3a]/15"
-                >
-                  {lang === "ar" ? "تسجيل الدخول" : "Login to Helper"}
-                </button>
-                <button 
-                  onClick={() => { setIsRegisterMode(true); setIsAuthModalOpen(true); }}
-                  className="w-full py-4 bg-[#f5f0ea] hover:bg-[#e8e2d9] transition-all text-[#1a1612] font-bold text-sm rounded-2xl"
-                >
-                  {lang === "ar" ? "إنشاء حساب مجاني" : "Create Free Account"}
-                </button>
-                <button 
-                  onClick={() => setCurrentView("landing")}
-                  className="w-full py-3 text-xs text-[#8a8278] hover:text-[#c45a3a] font-bold transition-all flex items-center justify-center gap-1 mt-2"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  {lang === "ar" ? "العودة للرئيسية" : "Back to Home"}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )
-      ) : (
-        /* ORIGINAL LANDING PAGE SECTIONS */
+        {/* ORIGINAL LANDING PAGE SECTIONS */}
         <>
           {/* HERO SECTION */}
           <header className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f0ea] overflow-hidden">
@@ -2922,7 +1938,7 @@ export default function App() {
                     onClick={() => {
                       window.history.pushState(null, "", `?v=${video.id}`);
                       setActiveVideo(video);
-                      setCurrentView("helper");
+                      setProductMode(true);
                       showToast(
                         lang === "ar" 
                           ? `جاري تحميل الدرس والمذكرات: ${video.title}` 
@@ -3374,7 +2390,6 @@ export default function App() {
             </div>
           </footer>
         </>
-      )}
 
       {/* AUTHENTICATION DIALOG (Modal) */}
       <AnimatePresence>
