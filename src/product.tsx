@@ -11,7 +11,7 @@ const guestUser = {
   role: "student" as const,
 };
 
-export default function Product() {
+export default function Product({ onBackToHome }: { onBackToHome?: () => void } = {}) {
   const [lang, setLang] = useState<"en" | "ar">("en");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
@@ -50,7 +50,7 @@ export default function Product() {
         user={guestUser}
         lang={lang}
         onLangChange={setLang}
-        onBackToHome={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onBackToHome={onBackToHome || (() => window.scrollTo({ top: 0, behavior: "smooth" }))}
         catalogVideos={catalogVideos}
       />
 
